@@ -1,0 +1,281 @@
+\documentclass[cjk]{beamer}
+\usepackage{CJK}						%windows
+\usepackage{ccmap}
+\usepackage{float}
+%\usepackage{CJKutf8}					%Linux
+%\usepackage{CJKulem}
+\usepackage{courier}
+\usepackage{makeidx}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{graphicx}
+\usepackage{latexsym}
+\usepackage{multicol}
+\usepackage{multirow}
+\usepackage[linesnumbered,ruled,longend]{algorithm2e}
+\usepackage{extramarks}
+\usepackage{indentfirst}
+\usepackage{hyperref}
+
+\newcommand{\song}{\CJKfamily{song}} % 宋体
+\newcommand{\hei}{\CJKfamily{hei}}   % 黑体
+\newcommand{\fs}{\CJKfamily{fs}}	 % 仿宋
+\newcommand{\kai}{\CJKfamily{kai}}   % 楷体
+\newcommand{\li}{\CJKfamily{li}}     % 隶书
+\newcommand{\you}{\CJKfamily{you}} 	 % 幼圆
+
+\usetheme{Boxes}
+\useinnertheme{rectangles}
+\useoutertheme{miniframes}
+
+\title{Warm-Up Contest for Shaoxing No. 1 High School Summer Training 2016}
+\author{Yuchong Pan}
+
+\begin{document}
+
+\begin{CJK}{GBK}{kai}
+
+	\SetKwBlock{Function}{Function}{end}
+
+	\title{绍兴一中2016年暑期集训热身赛}
+	\author{Yuchong Pan}
+	\institute{University of British Columbia}
+	\date{\today}
+	\maketitle
+
+	\begin{frame}%[allowframebreaks] [shrink]
+		\frametitle{主要内容}
+		\begin{multicols}{2}
+			\tableofcontents
+		\end{multicols}
+	\end{frame}
+
+	\section{共线点}
+	\begin{frame}
+		\frametitle{Outline}
+		\begin{multicols}{2}
+			\tableofcontents[currentsection,currentsubsection]
+		\end{multicols}
+	\end{frame}
+
+	\subsection{题目大意}
+    \begin{frame}
+        \begin{itemize}
+            \pause \item 在一个二维平面上，给定$N$个点，求在同一条直线上最多能有多少个点。
+        \end{itemize}
+    \end{frame}
+
+    \subsection{标准算法}
+    \begin{frame}
+        \begin{itemize}
+            \pause \item 点和斜率确定一条直线。
+            \pause \item 枚举每一个点，计算其他点与这个点构成直线的斜率。
+            \pause \item 使用STL map或hash table等方法统计出同一种斜率对应的点的个数，取最大值。
+            \pause \item 时间复杂度$O(N ^ 2 log N)$（使用STL map），空间复杂度$O(N)$。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}
+        \begin{itemize}
+            \pause \item 为了避免double类型的精度误差，可以将斜率以分数的形式储存。
+            \pause \item 可以用一个特殊的数来表示斜率不存在的直线，如INT\_MAX。
+            \pause \item 注意数据中可能出现重合点，单独统计即可。
+        \end{itemize}
+    \end{frame}
+
+    \section{饥饿游戏}
+	\begin{frame}
+		\frametitle{Outline}
+		\begin{multicols}{2}
+			\tableofcontents[currentsection,currentsubsection]
+		\end{multicols}
+	\end{frame}
+
+    \subsection{题目大意}
+    \begin{frame}
+        \begin{itemize}
+            \pause \item $N$只跳蚤在长度为$N + 1$的横轴上。
+            \pause \item 第$i$只跳蚤在坐标$i$上，重量为$w_i$。
+            \pause \item 跳蚤可以选择向左走或向右走。
+            \pause \item 当两只跳蚤相遇时，大跳蚤吃掉小跳蚤，大跳蚤的重量增加小跳蚤的重量。
+            \pause \item 如果重量相同，左边的跳蚤吃掉右边的跳蚤。
+            \pause \item 给出$N$和$K$，问第$K$只跳蚤最后留下的情况数。
+        \end{itemize}
+    \end{frame}
+
+    \subsection{子问题1}
+    \begin{frame}
+        \begin{itemize}
+            \pause \item $w_i = i$，即$w_i$递增。
+            \pause \item 跳蚤$K$只可能先向左，碰到端点后向右。
+            \pause \item 考虑使用动态规划。
+            \pause \item 从第$K$只跳蚤开始考虑，即假设数轴上只有$K$只跳蚤，求最后一只存货的情况数。
+            \pause \item 假设$j$是所有跳蚤中向左走的最右边一只，那么$1$到$j$所有跳蚤都会变成一个整体，重量为$\frac{j * (j + 1)}{2}$。
+            \pause \item 从$K$往前找到$j$，使得$\sum\limits_{i = j}^{K}w_i$大于$\frac{1}{2} \sum\limits_{i = 1}^{K}w_i$。
+            \pause \item 此时$j$到$K - 1$所有跳蚤的方向都是固定的，即向右。
+            \pause \item 跳蚤$K$的方向可以向左或向右。
+            \pause \item 此时$DP[K] = 2 ^ {j + 1}$。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}
+        \begin{itemize}
+            \pause \item 考虑$i > K$的情况。
+            \pause \item 设数组$a[j]$表示$\sum\limits_{i = a[j]}^{j}w[i]$大于$\sum\limits_{i = 1}^{j - 1}w[i]$的最大坐标。
+            \pause \item 此时，$n - 1$，$n - 2$，$...$，$a[i]$均往右走，而$n$既可以往左走又可以往右走。
+            \pause \item 因此，$DP[n] = \sum\limits_{i = a[i]}^{n - 1} DP[i]$。
+            \pause \item 至此，时间复杂度$O(N ^ 2)$，空间复杂度$O(N)$。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}
+        \begin{itemize}
+            \pause \item 用前缀和来优化DP转移。
+            \pause \item 即用$DP\_sum[j]$表示$\sum\limits_{i = 1}^{j} DP[i]$。
+            \pause \item 那么，$DP[i] = DP\_sum[n - 1] - DP\_sum[a[i] - 1]$。
+            \pause \item 时间复杂度$O(N)$，空间复杂度$O(N)$。
+        \end{itemize}
+    \end{frame}
+
+    \subsection{子问题2}
+    \begin{frame}
+        \begin{itemize}
+            \pause \item $w_i$无特殊限制。
+            \pause \item 考虑使用区间动态规划进行预处理。
+            \pause \item 令$F[i, j]$表示区间$[i, j]$作为一个整体向左走的方案数，$G[i, j]$表示区间$[i, j]$ 作为一个整体向右走的方案数。
+            \pause \item 转移分情况讨论即可。
+            \pause \item 转移时如果在最左端或最右端，则增加一种方案，即碰到端点后掉头。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}
+        \begin{itemize}
+            \pause \item 由于$w_i$无特殊限制，跳蚤$K$可以先向左走也可以先向右走。
+            \pause \item 分两种情况进行动态规划，分类讨论即可。
+            \pause \item 同样需要注意转移时在两端的情况。
+            \pause \item 具体细节详见代码。
+            \pause \item 时间复杂度$O(N ^ 2) - O(N ^ 3)$，空间复杂度$O(N ^ 2)$。
+        \end{itemize}
+    \end{frame}
+
+    \section{小星星}
+	\begin{frame}
+		\frametitle{Outline}
+		\begin{multicols}{2}
+			\tableofcontents[currentsection,currentsubsection]
+		\end{multicols}
+	\end{frame}
+
+    \subsection{题目大意}
+    \begin{frame}
+        \begin{itemize}
+            \pause \item 给定一个$n$个点$m$条边的无自环无重边的无向图。
+            \pause \item 可以删一条边，要求删边后的图是二分图。
+            \pause \item 问可以删哪些边。
+            \pause \item $n,m\leq 2*10^5$。
+        \end{itemize}
+    \end{frame}
+
+    \subsection{标准算法}
+    \begin{frame}
+        \begin{itemize}
+            \pause \item 一个图是二分图的充要条件是这个图没有奇环。
+            \pause \item 考虑$DFS$这个图，得到一棵$DFS$树。
+            \pause \item 因为是无向图，所以非树边只会是返祖边。
+            \pause \item 如果图不存在奇环，那么删任意一条边都是可行的。
+        \end{itemize}
+    \end{frame}
+
+    \begin{frame}
+        \begin{itemize}
+            \pause \item 考虑有奇环的情况。
+            \pause \item 考虑由一条返祖边构成的环。
+            \pause \item 如果这个环是奇环，那么必须从这个环中删掉一条边，否则整个图必然不是二分图。
+            \pause \item 如果只存在一个奇环，那么只能删掉环上的任意一条边。
+        \end{itemize}
+    \end{frame}
+
+    \begin{frame}
+        \begin{itemize}
+            \pause \item 考虑存在2个及以上奇环的情况。
+            \pause \item 如果存在2个及以上奇环，那么删任意一个奇环的返祖边显然无济于事，因为删返祖边只会破坏一个奇环。
+            \pause \item 因此必须删树边。
+        \end{itemize}
+    \end{frame}
+
+    \begin{frame}
+        \begin{itemize}
+            \pause \item 观察出如下结论：
+            \pause \item 有且仅有2条属于奇环的返祖边的环必然是偶环。
+            \pause \item 有且仅有2条属于偶环的返祖边的环必然是偶环。
+            \pause \item 有且仅有1条属于奇环的返祖边和1条属于偶环的返祖边的环必然是奇环。
+        \end{itemize}
+    \end{frame}
+
+    \begin{frame}
+        \begin{itemize}
+            \pause \item 下面证明以下条件是可行解的充要条件：
+            \pause \item 这条边必须同时属于所有的奇环。
+            \pause \item 这条边不属于任何偶环。
+        \end{itemize}
+    \end{frame}
+
+    \begin{frame}
+        \begin{itemize}
+            \pause \item 先证明必要性。
+            \pause \item 如果删掉一条边后，存在一个奇环没有被破坏，那么显然不合法。
+            \pause \item 所以删掉的边必须同时属于所有的奇环。
+            \pause \item 如果一条边属于一个偶环，那么必然意味着，有一条属于偶环的返祖边跨越了它。
+            \pause \item 同时，它属于所有奇环，所以也必然存在一条属于奇环的返祖边跨越了它。
+            \pause \item 由结论3，拥有1条属于奇环的返祖边和1条属于偶环的返祖边的环必然是奇环。
+            \pause \item 与假设矛盾，因此这条边不能属于任何一个偶环。
+        \end{itemize}
+    \end{frame}
+
+    \begin{frame}
+        \begin{itemize}
+            \pause \item 同样可以证明，这个约束是可行解的充分条件。
+            \pause \item 于是得到了最终的结论：
+            \pause \item 一条树边合法，当且仅当它属于所有奇环，不属于任何偶环。
+        \end{itemize}
+    \end{frame}
+
+    \begin{frame}
+        \begin{itemize}
+            \pause \item 考虑维护每条树边属于奇环和偶环的个数。
+            \pause \item 在$DFS$时记录深度，找到一条返祖边，即可判断这条返祖边所在环的奇偶性。
+            \pause \item 直观来看，可以用$LCT$或树链剖分维护这个环上的树边。
+            \pause \item 但是考虑到问题是离线的，可以在树上进行差分维护。
+            \pause \item 时间复杂度$O(N+M)$。
+        \end{itemize}
+    \end{frame}
+
+    \subsection{生成数据}
+    \begin{frame}{生成数据}
+        \begin{itemize}
+            \pause \item 对于绝大多数随机数据，问题都是无解的。
+            \pause \item 考虑构造数据。
+            \pause \item 我们需要满足有一定数量的边属于所有奇环而不属于任一偶环。
+            \pause \item 考虑构造一条长链和一些环，使得一些奇环横跨长链的绝大部分，一些偶环横跨长链的小部分。
+        \end{itemize}
+    \end{frame}
+    
+    \section{参考资料}
+    \begin{frame}
+		\frametitle{Outline}
+		\begin{multicols}{2}
+			\tableofcontents[currentsection,currentsubsection]
+		\end{multicols}
+	\end{frame}
+    
+    \subsection{参考资料}
+    \begin{frame}
+        \begin{itemize}
+            \pause \item LeetCode 149: Max Points on a Line.
+            \pause \item ACM-ICPC EC-Final 2015 F: Hungry Game of Ants.
+            \pause \item Codeforces Beta Round 19 E: Fairy.
+            \pause \item Codeforces题目泛做解题报告, 许昊然.
+        \end{itemize}
+    \end{frame}
+
+\end{CJK}
+\end{document}

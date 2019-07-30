@@ -1,0 +1,45 @@
+\begin{center}
+	\section{\problemdzh}
+\end{center}
+
+\subsection{【问题描述】}
+考虑线性递推关系$f(n) = a_1f(n - 1) + a_2f(n - 2) + \cdots + a_df(n - d)$。计算$f(n)$除以$m$的余数。
+
+\subsection{【输入格式】}
+从文件~\problemd.in~中读入数据。
+
+输入包含若干组数据。
+
+每组数据第一行为3个整数$d, n, m$。
+
+第二行为$d$个非负整数$a_1, a_2, \cdots, a_d$。
+
+第三行为$d$个非负整数$f(1), f(2), \cdots, f(d)$。
+
+输入结束标志为$d = n = m = 0$。
+
+\subsection{【输出格式】}
+输出到文件~\problemd.out~中。
+
+对于每组数据，输出$f(n)$除以$m$的余数。
+
+\subsection{【样例输入】}
+{\ttfamily
+2 13 10007
+
+1 1
+
+1 1
+
+0 0 0
+}
+\subsection{【样例输出】}
+{\ttfamily
+233
+}
+
+\subsection{【数据规模与约定】}
+对于$100\%$的数据，数据组数不超过100组，$1 \leq d \leq 15$，$1 \leq n \leq 2 ^ {31} - 1$，$1 \leq m \leq 2 * 10 ^ 9$，所有非负整数均不超过$2 ^ {32} - 1$。
+
+\clearpage
+

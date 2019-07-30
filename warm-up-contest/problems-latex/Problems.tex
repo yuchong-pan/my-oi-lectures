@@ -1,0 +1,84 @@
+\documentclass[12pt]{article}
+\usepackage{ctex}						%windows
+\usepackage{ccmap}
+\usepackage{float}
+%\usepackage{CJKutf8}					%Linux
+\usepackage{CJKulem}
+\usepackage{courier}
+\usepackage{makeidx}
+\usepackage{titling}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{graphicx}
+\usepackage{latexsym}
+\usepackage{multirow}
+\usepackage{extramarks}
+\usepackage{indentfirst}
+\usepackage[colorlinks,citecolor=green,linkcolor=blue,menucolor=red,
+			bookmarksnumbered=false,bookmarksopen=false,
+			%unicode,					%Linux
+			CJKbookmarks,				%windows
+			pdftex]{hyperref}
+\makeindex %索引
+\setcounter{secnumdepth}{0}
+
+%自定义标题
+\pretitle{\begin{center}\Huge}
+\posttitle{\end{center}}
+\preauthor{\rightline{Yuchong Pan}}
+\postauthor{}
+
+%\AtBeginDocument{\begin{CJK*}{UTF8}{song}\CJKindent\sloppy\CJKspace\CJKtilde\AtEndDocument{\end{CJK*}}}			%Linux
+
+\renewcommand{\contentsname}{目\quad 录}
+\renewcommand{\abstractname}{摘\quad 要}
+\renewcommand{\indexname}{索\quad 引}
+\renewcommand{\listfigurename}{插图目录}
+\renewcommand{\listtablename}{表格目录}
+\renewcommand{\refname}{参考文献}
+\renewcommand{\figurename}{图}
+\renewcommand{\tablename}{表}
+\newcommand{\fleft}[1]{\begin{flushleft}#1\end{flushleft}}
+\newcommand{\fright}[1]{\begin{flushright}#1\end{flushright}}
+\newcommand{\fcenter}[1]{\begin{center}#1\end{center}}
+
+%日期及标题
+\newcommand{\thisdate}{2016~年~7~月~4~日}
+\newcommand{\thistitle}{绍兴一中2016年暑期集训热身赛}
+
+%题目名称
+\newcommand{\problema}{collinear}
+\newcommand{\problemazh}{共线点}
+\newcommand{\problemb}{hungry}
+\newcommand{\problembzh}{饥饿游戏}
+\newcommand{\problemc}{star}
+\newcommand{\problemczh}{小星星}
+
+
+%字体
+\newcommand{\song}{\CJKfamily{song}}	% 宋体
+\newcommand{\hei}{\CJKfamily{hei}}		% 黑体
+\newcommand{\fs}{\CJKfamily{fs}}		% 仿宋
+\newcommand{\kai}{\CJKfamily{kai}}		% 楷体
+\newcommand{\li}{\CJKfamily{li}}		% 隶书
+\newcommand{\you}{\CJKfamily{you}}		% 幼圆
+
+\begin{document}
+	%页眉页脚
+	\hypersetup{pdftitle={Inside Contest},pdfauthor={wwt}}
+	\pagestyle{fancy}
+	\renewcommand{\sectionmark}[1]{\markboth{#1}{}}
+	\lhead{\footnotesize\textrm\thistitle}
+%	\chead{\footnotesize\textrm\thisdate}
+	\rhead{\footnotesize\textrm\nouppercase\firstleftmark}
+%	\cfoot{\small\textrm{第~\thepage~页~~共~\pageref{LastPage}~页}}
+
+	\include{warmup}
+	\include{a}
+	\include{b}
+	\include{c}
+
+\end{document}

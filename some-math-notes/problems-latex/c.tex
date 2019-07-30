@@ -1,0 +1,43 @@
+\begin{center}
+	\section{\problemczh}
+\end{center}
+
+\subsection{【问题描述】}
+有一个正整数$n$满足$C$个条件，每个条件都形如“它除以$X$的余数在集合$\{Y_1, Y_2, \cdots, Y_k\}$中”，所有条件中的$X$两两互素，你的任务是找出最小的$S$个解。
+
+\subsection{【输入格式】}
+从文件~\problemc.in~中读入数据。
+
+第一行为两个整数$C$和$S$。
+
+以下$C$行每行描述一个条件，首先是两个整数$X$和$k$，接下来$k$个整数$Y_1, Y_2, \cdots, Y_k$。
+
+所有$X$的乘积保证在32位带符号整数的范围内。
+
+\subsection{【输出格式】}
+输出到文件~\problemc.out~中。
+
+输出$S$个最小整数解，每行一个数，并按照从小到大顺序排列。
+
+\subsection{【样例输入】}
+{\ttfamily
+3 2
+
+2 1 1
+
+5 2 0 3
+
+3 2 1 2
+}
+\subsection{【样例输出】}
+{\ttfamily
+5
+
+13
+}
+
+\subsection{【数据规模与约定】}
+对于$100\%$的数据，$1 \leq C \leq 9$，$1 \leq S \leq 10$，$X \geq 2$，$1 \leq k \leq 100$，$0 \leq Y_1, Y_2, \cdots, Y_k < X$。
+
+\clearpage
+

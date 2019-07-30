@@ -1,0 +1,1158 @@
+\documentclass[cjk]{beamer}
+\usepackage{CJK}						%windows
+\usepackage{ccmap}
+\usepackage{float}
+%\usepackage{CJKutf8}					%Linux
+%\usepackage{CJKulem}
+\usepackage{courier}
+\usepackage{makeidx}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{graphicx}
+\usepackage{latexsym}
+\usepackage{multicol}
+\usepackage{multirow}
+\usepackage[linesnumbered,ruled,longend]{algorithm2e}
+\usepackage{extramarks}
+\usepackage{indentfirst}
+\usepackage{hyperref}
+\usepackage{listings}
+
+\newcommand{\song}{\CJKfamily{song}} % 宋体
+\newcommand{\hei}{\CJKfamily{hei}}   % 黑体
+\newcommand{\fs}{\CJKfamily{fs}}	 % 仿宋
+\newcommand{\kai}{\CJKfamily{kai}}   % 楷体
+\newcommand{\li}{\CJKfamily{li}}     % 隶书
+\newcommand{\you}{\CJKfamily{you}} 	 % 幼圆
+
+\usetheme{Boxes}
+\useinnertheme{rectangles}
+\useoutertheme{miniframes}
+
+\title{图论算法选讲}
+\author{Yuchong Pan}
+
+\begin{document}
+
+\begin{CJK}{GBK}{kai}
+
+	\SetKwBlock{Function}{Function}{end}
+
+	\title{图论算法选讲}
+	\author{Yuchong Pan}
+	\institute{Faculty of Science, University of British Columbia}
+	\date{\today}
+	\maketitle
+
+	\begin{frame}[shrink]
+		\frametitle{主要内容}
+		\begin{multicols}{3}
+			\tableofcontents
+		\end{multicols}
+	\end{frame}
+
+	\section{图的储存}
+	\begin{frame}[shrink]
+		\frametitle{主要内容}
+		\begin{multicols}{3}
+			\tableofcontents[currentsection,currentsubsection]
+		\end{multicols}
+	\end{frame}
+
+	\subsection{邻接矩阵}
+    \begin{frame}{定义}
+        \begin{itemize}
+            \pause \item 使用方阵$E[n][n]$表示由$n$个顶点构成的图。
+            \pause \item 对于无权图，存在（不存在）从顶点$u$到$v$的边，当且仅当$E[u][v] = 1$ （$0$）。
+            \pause \item 对于带权图，$E[u][v]$表示从$u$到$v$的边权。对于不存在的边，统一取一个特殊值，如$\infty$。
+            \pause \item 对于无向图，$E[u][v] = E[v][u]$。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{复杂度}
+        \begin{itemize}
+            \pause \item 加入一条边和查询一条边的时间复杂度均为$O(1)$。
+            \pause \item 枚举从顶点$u$发出的所有边的时间复杂度为$O(n)$。
+            \pause \item 遍历整张图的时间复杂度为$O(n ^ 2)$。
+            \pause \item 邻接矩阵的空间复杂度为$O(n^2)$。
+        \end{itemize}
+    \end{frame}
+
+    \subsection{邻接表}
+    \begin{frame}{定义}
+        \begin{itemize}
+            \pause \item 对于点$u$，$son[u]$表示从点$u$发出的第一条边的编号。
+            \pause \item 对于边$p$，$next[p]$表示边$p$指向的下一条边，$to[p]$表示边$p$指向的顶点编号，$cost[p]$表示边$p$的边权。
+            \pause \item 对于无向图，将一条无向边拆成两条有向边。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{复杂度}
+        \begin{itemize}
+            \pause \item 枚举从顶点$u$发出的所有边的时间复杂度为$\Theta(1 + outDegree(u))$。
+            \pause \item 遍历整张图的时间复杂度为$O(n + e)$。
+            \pause \item 邻接表的空间复杂度为$O(e)$。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{实现}
+        \begin{itemize}
+            \pause \item 对于无向图，如果在算法中需要找一条边的反向边，则边从2开始计数。
+            \pause \item 一条无向边拆成的两条有向边在邻接表中相邻。
+            \pause \item 边$p$的反向边为$p~xor~1$。
+        \end{itemize}
+    \end{frame}
+
+    \section{拓扑图及拓扑排序}
+    \begin{frame}[shrink]
+		\frametitle{主要内容}
+		\begin{multicols}{3}
+			\tableofcontents[currentsection,currentsubsection]
+		\end{multicols}
+	\end{frame}
+
+    \subsection{有向无环图}
+    \begin{frame}{定义}
+        \begin{itemize}
+            \pause \item 又称拓扑图。
+            \pause \item 不含任何环路的有向图，称作有向无环图。
+        \end{itemize}
+    \end{frame}
+
+    \subsection{拓扑排序}
+    \begin{frame}{拓扑序}
+        \begin{itemize}
+            \pause \item 给定一个有向图，求一个点的序列，即拓扑序。
+            \pause \item 对于一条有向边$i \rightarrow j$，要求在拓扑序中的位置$index[i] < index[j]$。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{存在性、唯一性及有向无环图}
+        \begin{itemize}
+            \pause \item 对于一张图，拓扑排序不一定存在（如含环路的有向图）。
+            \pause \item 对于一张图，拓扑排序不一定唯一（如$A \rightarrow B$，$A \rightarrow C$）。
+            \pause \item 有向无环图的拓扑排序必然存在。
+        \end{itemize}
+    \end{frame}
+
+    \subsection{基于队列优化的拓扑排序}
+    \begin{frame}{概述}
+        \begin{itemize}
+            \pause \item 将入度为0的点加入队列。
+            \pause \item 对于队列中访问到的每个点，把这个点加入序列。
+            \pause \item 并且将这个点和这个点发出的边从图中删除，即将与这个点相连的点的入度减1。
+            \pause \item 若某个点入度减1后变为0，则将这个点加入队列。
+            \pause \item 重复这个过程，直到队列为空。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{复杂度}
+        \begin{itemize}
+            \pause \item 每个点至多被删除一次，每条边也至多被删除一次。
+            \pause \item 基于队列优化的拓扑排序的时间复杂度为$O(n + e)$。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{应用}
+        \begin{itemize}
+            \pause \item 基于队列优化的拓扑排序可以判断一个图中是否存在环。
+            \pause \item 当队列为空时，如果还有点的入度不为0，说明图中存在环。
+        \end{itemize}
+    \end{frame}
+
+    \subsection{基于拓扑图的动态规划}
+    \begin{frame}{概述}
+        \begin{itemize}
+            \pause \item 对于有向无环图中的一条边$u \rightarrow v$，删掉这条边的同时进行状态转移，用$u$的状态来更新$v$的状态。
+            \pause \item 一般地，所有动态规划的状态图都是有向无环图，以保证动态规划的无后效性。
+        \end{itemize}
+    \end{frame}
+
+    \subsection{例题选讲}
+    \begin{frame}{题目大意}
+        \begin{itemize}
+            \pause \item 给定一个拓扑图，每条边有两个边权。
+            \pause \item 求两条1到$n$的路径，第一条用边权1，第二条用边权2。
+            \pause \item 要求两条路径长度相等且最短。
+            \pause \item $n \leq 100$，边权$\leq 100$。
+            \pause \item 题目来源：Meeting Time, USACO 2015 January。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{标准算法}
+        \begin{itemize}
+            \pause \item 拓扑图动态规划。
+            \pause \item 令$f[u][i], g[u][i]$分别表示是否存在从1到$n$的长度为$i$的路径一和路径二。
+            \pause \item 对于一条边$u \rightarrow v$，$f[v][i]~|=~f[u][i - cost(u, v)]$。
+            \pause \item 时间复杂度$O(e * edge\_value)$。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{优化}
+        \begin{itemize}
+            \pause \item 由于是基于bool数组的动态规划，可以使用bitset进行优化。
+            \pause \item 对于边$u \rightarrow v$，状态转移改为$f[v]~|=~f[u] << cost(u, v)$。
+            \pause \item 时间复杂度降为$O\left(\frac{e * edge\_value}{w}\right)$。
+        \end{itemize}
+    \end{frame}
+
+    \section{欧拉路径}
+    \begin{frame}[shrink]
+		\frametitle{主要内容}
+		\begin{multicols}{3}
+			\tableofcontents[currentsection,currentsubsection]
+		\end{multicols}
+	\end{frame}
+
+    \subsection{欧拉路径及回路}
+    \begin{frame}{定义}
+        \begin{itemize}
+            \pause \item 若一条路径经过每条边恰好一次，那么这条路径称作欧拉路径。
+            \pause \item 类似地，若一个路径经过每条边恰好一次，且这条路径的起点和终点相同，那么这条路径称作欧拉回路。
+        \end{itemize}
+    \end{frame}
+
+    \subsection{欧拉路径及回路的判定}
+    \begin{frame}{无向图}
+        \begin{itemize}
+            \pause \item 若一个点的度为奇数，则称这个点为奇点。
+            \pause \item 若一个点的度为偶数，则称这个点为偶点。
+            \pause \item 若一张图有且仅有两个奇点，则这张图存在一条欧拉路径。
+            \pause \item 若一张图不存在奇点，则这张图存在一条欧拉回路。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{有向图}
+        \begin{itemize}
+            \pause \item 若一张图所有顶点入度与出度相等，则这张图存在一条欧拉回路。
+            \pause \item 若一张图有且仅有一个点入度比出度大1，一个点出度比入度大1，其他的所有点入度与出度相等，则这张图存在一条欧拉路径。
+        \end{itemize}
+    \end{frame}
+
+    \subsection{DFS求欧拉路径}
+    \begin{frame}{算法描述}
+        \begin{itemize}
+            \pause \item 对于存在欧拉回路的图，随意选择一个点作为起点。
+            \pause \item 否则，无向图选择一个奇点作为起点，有向图选择出度比入度大1的点作为起点。
+            \pause \item 从起点对图进行DFS，当回溯时将顶点加入欧拉路径。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{理解}
+        \begin{itemize}
+            \pause \item 从起点开始进行DFS，先找到一个包含起点的环。
+            \pause \item 对于环上的点，若改点还有未覆盖到的出边，则以该点为起点，找到另一个包含该点的环。
+            \pause \item 不断重复这个操作，直到所有的边都被覆盖。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{复杂度}
+        \begin{itemize}
+            \pause \item 相当于DFS的时间复杂度，每条边被覆盖一次，时间复杂度为$O(n + e)$。
+        \end{itemize}
+    \end{frame}
+
+    \subsection{例题选讲}
+    \begin{frame}{题目大意}
+        \begin{itemize}
+            \pause \item 给出$n$个字符串。
+            \pause \item 若A串结尾和B串开头相同，则可以把A和B连起来。
+            \pause \item 问是否可以把所有单词串成一串。
+            \pause \item 若能，给出字典序最小的一个方案。
+            \pause \item $n \leq 1000$。
+            \pause \item 题目来源：Waterloo local 2003.01.25。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{标准算法}
+        \begin{itemize}
+            \pause \item 对于每个单词，把单词的起点和终点字母当作顶点。
+            \pause \item 每个单词即相当于一条从起点到终点的有向边。
+            \pause \item 判断这个图是否存在欧拉路径，若存在，用DFS求出这个欧拉路径即可。
+            \pause \item 为保证字典序最小，先将所有字符串排序，按顺序加边即可。
+            \pause \item 时间复杂度$O(n)$。
+        \end{itemize}
+    \end{frame}
+
+    \section{生成树相关问题}
+    \begin{frame}[shrink]
+		\frametitle{主要内容}
+		\begin{multicols}{3}
+			\tableofcontents[currentsection,currentsubsection]
+		\end{multicols}
+	\end{frame}
+
+    \subsection{定义}
+    \begin{frame}{生成树}
+        \begin{itemize}
+            \pause \item 无向连通图$G$的某一无环连通子图$T$若覆盖$G$中所有的顶点，则称作$G$的一棵生成树。
+            \pause \item 生成树的顶点数为$n$，边数为$n - 1$。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{最小生成树}
+        \begin{itemize}
+            \pause \item 若图$G$为一张带权图，则每一棵生成树的权值即为其所采用各边边权的和。
+            \pause \item 在$G$所有的生成树中，权值最小的生成树称为最小生成树。
+        \end{itemize}
+    \end{frame}
+
+    \subsection{最小生成树性质}
+    \begin{frame}{切割性质}
+        \begin{itemize}
+            \pause \item 假设所有边权均不相同。
+            \pause \item 设$S$为既非空集也非全集的$V$的子集，边$e = (u, v)$满足$u \in S$且$v \in V \backslash S$的所有边中权值最小的一个。
+            \pause \item 则图$G$的所有最小生成树均包含$e$。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{回路性质}
+        \begin{itemize}
+            \pause \item 假设所有边边权均不相同。
+            \pause \item 设$C$是图$G$中的任意回路，边$e$是$C$上权值最大的边。
+            \pause \item 则图$G$的所有生成树均不包含$e$。
+        \end{itemize}
+    \end{frame}
+
+    \subsection{Kruskal算法}
+    \begin{frame}{概述}
+        \begin{itemize}
+            \pause \item 初始时，图$G$中的每个点构成一棵树，$n$棵树组成一个森林。
+            \pause \item 将所有边按边权从小到大排序。
+            \pause \item 每次在边集$E$中选取边权最小的一条边$p = (u, v)$。
+            \pause \item 若$u$和$v$分属不同的树，则将这条边加入子图，即把$u$和$v$所在的两棵树合成一棵树。
+            \pause \item 反之，两个顶点已在一棵树上，则边$p$不加入子图，选取下一条边权最小的边尝试。
+            \pause \item 以此类推，直到森林中只有一棵树。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{实现及复杂度}
+        \begin{itemize}
+            \pause \item 使用并查集维护子图的连通性。
+            \pause \item 使用快速排序算法对边进行排序，时间复杂度为$O(e log e)$。
+            \pause \item 使用按秩合并和路径压缩优化并查集，时间复杂度为$O(e \alpha(n))$。
+            \pause \item 因此，Kruskal算法的时间复杂度为$O(e~log~e + e\alpha(n))$。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{正确性证明}
+        \begin{itemize}
+            \pause \item 首先证明Kruskal算法给出图$G$的一棵生成树。
+            \pause \item 令$Y$为由Kruskal算法得到的图$G$的一个子图。
+            \pause \item 若一条边的两端顶点已在一棵树上，则这条边将被舍弃，因此$Y$无回路。
+            \pause \item 因为连接$Y$中两个部分的第一条边将会被加入$Y$中，因此$Y$为连通图。
+            \pause \item 综上，$Y$为图$G$的一棵生成树。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{正确性证明}
+        \begin{itemize}
+            \pause \item 接下来证明Kruskal算法的最小性。
+            \pause \item 首先证明命题$P$：令$F$为算法任意阶段所选取的边集，则至少有一棵最小生成树将包含$F$。
+            \pause \item 当$F$为空时，$P$显然成立。
+            \pause \item 假设$F$为非最终阶段的选取的边集，令$T$为包含$F$的一棵最小生成树。
+            \pause \item 若下一条选取的边$e$也在$T$上，则$P$对$F + e$也成立。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{正确性证明}
+        \begin{itemize}
+            \pause \item 若$e$不在$T$上，$T + e$将会产生一个环$C$。
+            \pause \item $C$上存在一条不在$F$上的边$f$。（如果$f$不存在，那么$e$不可能作为下一条被选择的边，因为这样会产生环$C$。）
+            \pause \item 因此，$T - f + e$是图的一棵生成树。
+            \pause \item 因为$f$的边权不小于$e$的边权（否则算法会选择$f$而非$e$），并且$T$是一棵最小生成树，所以$T - f + e$ 的权值与$T$ 相同。
+            \pause \item 因此$T - f + e$是一棵包含$F + e$的最小生成树，从而$P$对$F + e$成立。
+            \pause \item 根据数学归纳法，当$F$逐渐成为一棵生成树时，$P$始终成立。
+            \pause \item 因此，当$F$为一棵生成树时，它是一棵最小生成树。
+        \end{itemize}
+    \end{frame}
+
+    \subsection{Prim算法}
+    \begin{frame}{概述}
+        \begin{itemize}
+            \pause \item 选取点集$V$中的任意一点$x$作为起始点。令$V_{MST} = \{x\}$，$E_{MST} = \{\}$。
+            \pause \item 重复下列操作，直到$V_{MST} = V$：
+            \pause \item 在边集$E$中选取边权最小的边$<u, v>$，使得$u \in V_{MST}$，且$v \in V \in V \backslash V_{MST}$。
+            \pause \item 将$v$加入$V_{MST}$中，将$<u, v>$加入$E_{MST}$中。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{实现细节}
+        \begin{itemize}
+            \pause \item 令$lowcost[v]$表示将$v$连接到$V_{MST}$的最小边权。
+            \pause \item 初始时，$lowcost[v] = cost(v_0, v)$，其中$v_0$表示起始点的编号。
+            \pause \item 若$v$与$v_0$无边相连，则$lowcost[v] = +\infty$。
+            \pause \item 令$v \in V \backslash V_{MST}$，当一个点$u$被加入最小生成树时，用$cost(u, v)$更新$lowcost[v]$的值。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{复杂度}
+        \begin{itemize}
+            \pause \item 每次选取一个点加入最小生成树中，时间复杂度为$O(n)$。
+            \pause \item 用点$u$更新未加入最小生成树的点的$lowcost[v]$值，总时间复杂度为$O(e)$。
+            \pause \item 最小生成树中共有$n$个点，因此Prim算法的时间复杂度为$O(e + n ^ 2)$。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{正确性证明}
+        \begin{itemize}
+            \pause \item 与Kruskal算法类似地，Prim算法生成的子图一定是一棵生成树。
+            \pause \item 假设Prim算法生成的生成树$G_0$不是最小生成树。
+            \pause \item 令$G_{min}$为图$G$的一棵生成树，使得$cost(G_{min}) < cost(G_0)$。
+            \pause \item 则在$G_{min}$中存在$<u, v>$不属于$G_0$。
+            \pause \item 将$<u, v>$加入$G_0$中可得到一个环，因为$<u, v> \in G_{min}$，所以$<u, v>$不是环上的最长边。
+            \pause \item 这与Prim算法每次选取最短边矛盾。
+            \pause \item 故假设错误，Prim算法生成的生成树$G_0$是最小生成树。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{基于堆优化的Prim算法}
+        \begin{itemize}
+            \pause \item 观察朴素的Prim算法发现，代码时间主要浪费在遍历所有点找到一个距离最小的点，很容易联想到运用堆进行优化。
+            \pause \item 在堆中维护未加入最小生成树的点的$lowcost[v]$值。
+            \pause \item 每次在最小生成树中加入一个点$u$，枚举$u$的边表更新与其相邻的点$v$的$lowcost[v]$值。
+            \pause \item 使用二叉堆和邻接表优化Prim算法，时间复杂度为$O((n + e)~log~n)$。
+            \pause \item 还可以使用更高级的堆来优化时间复杂度，如用斐波那契堆和邻接表优化Prim算法的时间复杂度为$O(e + n~log~n)$。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{Kruskal算法与Prim算法的比较}
+        \begin{itemize}
+            \pause \item Kruskal算法的时间复杂度只与边有关，因此适合求稀疏图的最小生成树。
+            \pause \item 基于堆优化的Prim算法的效率与Kruskal算法相似。
+            \pause \item 朴素的Prim算法的时间复杂度只与点有关，因此适合求稠密图的最小生成树。
+            \pause \item 当$e \sim n^2$ 时，朴素的Prim算法比Kruskal算法和基于堆优化的Prim算法更优。
+        \end{itemize}
+    \end{frame}
+
+    \subsection{增量最小生成树}
+    \begin{frame}{问题描述}
+        \begin{itemize}
+            \pause \item 给定一个包含$n$个点的空图，依次加入$m$条带权边。
+            \pause \item 每加入一条边，输出当前图中的最小生成树权值。
+            \pause \item 如果当前图不连通，输出无解。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{算法}
+        \begin{itemize}
+            \pause \item 在上一次得到的最小生成树上，加入一条边$e = (u, v)$，图中恰好包含一个环。
+            \pause \item 根据回路性质，删除该回路上权值最大的边即可。
+            \pause \item 只需在加边前的最小生成树上找到$u$到$v$的唯一路径上权值最大的边，再和$e$比较，删除权值较大的一条。
+            \pause \item 由于路径唯一，用DFS或BFS找到这条路径即可。
+            \pause \item 总时间复杂度为$O(nm)$。
+            \pause \item 由于需要动态查询两点之间路径的最大边权，使用LCT优化，时间复杂度降至$O(m~log~n)$。
+        \end{itemize}
+    \end{frame}
+
+    \subsection{任意点对的最小瓶颈路}
+    \begin{frame}{问题描述}
+        \begin{itemize}
+            \pause \item 给出一张带权无向图，求每两个顶点$u$和$v$之间的最小瓶颈路的最大边长$f(u, v)$。
+            \pause \item 即求出$u$和$v$之间的一条路径，使得路径上的最长边尽量短。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{算法}
+        \begin{itemize}
+            \pause \item 原图的最小生成树即为一棵最小瓶颈生成树（最大边权尽量小的生成树）。
+            \pause \item 注意：不是每棵最小瓶颈生成树都是最小生成树。
+            \pause \item $u$到$v$的最小瓶颈路即为$u$到$v$在最小瓶颈生成树上的唯一路径。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{算法}
+        \begin{itemize}
+            \pause \item 用DFS把最小生成树变成有根树，同时计算$f(u, v)$。
+            \pause \item 当新访问一个顶点$u$，考虑所有已访问过的顶点$x$。
+            \pause \item 更新$f(x, u) = max(f(x, v), w(u, v))$，其中$v$是$u$的父结点。
+            \pause \item 每个$f(u, v)$需要常数时间计算，因此时间复杂度为$O(n ^ 2)$。
+        \end{itemize}
+    \end{frame}
+
+    \subsection{次小生成树}
+    \begin{frame}{问题描述}
+        \begin{itemize}
+            \pause \item 把所有生成树按照权值之和从大到小排序，求排在第二位的生成树。
+            \pause \item 如果最小生成树不唯一，次小生成树的权值和最小生成树相同。
+            \pause \item 严格次小生成树指权值严格小于最小生成树的最大生成树。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{算法}
+        \begin{itemize}
+            \pause \item 次小生成树不会和最小生成树完全相同。
+            \pause \item 因此，可以枚举图上不在最小生成树中出现的边$(u, v)$。
+            \pause \item 在最小生成树上加入$(u, v)$后，图上会出现一个环。
+            \pause \item 根据回路性质，删除的边为在最小生成树$u$到$v$的路径上的最长边。
+            \pause \item 因此，只需按照任意点对间最小瓶颈路的方法求出每对顶点$u$和$v$在最小生成树中唯一路径的最大边权$f(u, v)$即可。
+            \pause \item 总时间复杂度为$O(e + n ^ 2)$。
+        \end{itemize}
+    \end{frame}
+
+    \section{最短路问题}
+    \begin{frame}[shrink]
+		\frametitle{主要内容}
+		\begin{multicols}{3}
+			\tableofcontents[currentsection,currentsubsection]
+		\end{multicols}
+	\end{frame}
+
+    \subsection{定义及性质}
+    \begin{frame}{分类及定义}
+        \begin{itemize}
+            \pause \item 最短路问题分为多源最短路问题和单源最短路问题。
+            \pause \item 多源最短路问题：对于点集$V$中的每一个点$v$，求出$v$到其他所有点的最短路。
+            \pause \item 单源最短路问题：对于给定一个源点$s \in V$，求出$s$到其他所有点的最短路。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{最短路的最优子结构性质}
+        \begin{itemize}
+            \pause \item 如果$P(i, j) = \{V_i, ..., V_k, ..., V_l, ..., V_j\}$是从$i$到$j$的最短路径，$k$和$l$ 是$P(i, j)$上的两个中间点，那么$P(k, l)$必定是从$k$到$l$的最短路径。
+            \pause \item 下面证明该性质的正确性。
+            \pause \item $P(i, j) = P(i, k) + P(k, l) + P(l, j)$。
+            \pause \item 假设$P(k, l)$不是从$k$到$l$的最短路径。
+            \pause \item 必定存在另一条从$k$到$l$的最短路径$P'(k, l) < P(k, l)$。
+            \pause \item 那么$P'(i, j) = P(i, k) + P'(k, l) + P(l, j) < P(i, j)$，与$P(i, j)$是从$i$到$j$的最短路径矛盾。
+            \pause \item 假设错误，该性质得证。
+        \end{itemize}
+    \end{frame}
+
+    \subsection{Floyd算法}
+    \begin{frame}{概述}
+        \begin{itemize}
+            \pause \item Floyd算法用于求解没有负环的图上的多源最短路问题。
+            \pause \item 令$f(i, j, k)$表示$i$到$j$的最短路长度，其中最短路径上点的编号不大于$k$。
+            \pause \item 考虑将$f(i, j, k)$转移到$f(i, j, k + 1)$。
+            \pause \item 情况一：路径上点的编号不大于$k$。
+            \pause \item 情况二：先从$i$到$k + 1$，再从$k + 1$到$j$。
+            \pause \item $f(i, j, k + 1) = min(f(i, j, k), f(i, k+1, k) + f(k + 1, j, k))$。
+            \pause \item 边界值为$f(i, j, 0) = cost(i, j)$。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{实现及复杂度}
+        \begin{itemize}
+            \pause \item 首先计算出$k = 1$时所有点对$(i, j)$的$f(i, j, k)$的值。
+            \pause \item 接下来依次计算$k = 2$，$k = 3$，直至$k = n$时所有点对$(i, j)$的$f(i, j, k)$的值。
+            \pause \item 因此，实现时只需要维护一个二维数组$f[i][j]$，分层进行转移。
+            \pause \item 时间复杂度为$O(n ^ 3)$。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{Floyd算法求最小环}
+        \begin{itemize}
+            \pause \item Floyd算法保证了最外层枚举到$k$时所有顶点间以0到$k - 1$为中间点的最短路径。
+            \pause \item 在用中间点$k$更新所有点对$(i, j)$的最短路前，点$k$不存在于已存在的最短路$f[i][j]$上。
+            \pause \item 设环上编号最大的顶点为$k$，且在环上与$k$直接相连的两个顶点为$i$和$j$，则最大编号为$k$的最小环的长度为$min\{cost(i, k) + cost(k, j) + f(i, j)\}$。
+            \pause \item 枚举完所有的$k$后，即可找到整个图的最小环。
+            \pause \item 时间复杂度与Floyd算法相同，为$O(n ^ 3)$。
+        \end{itemize}
+    \end{frame}
+
+    \subsection{单源最短路问题}
+    \begin{frame}{三角不等式}
+        \begin{itemize}
+            \pause \item 令$s$为单源最短路问题的源点。
+            \pause \item 对于任意边$(u, v) \in E$，有$dist(s, v) \leq dist(s, u) + cost(u, v)$，称为三角不等式。
+            \pause \item 三角不等式为$dist(s, t)$是$s$到$t$的最短路的充分必要条件。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{松弛操作}
+        \begin{itemize}
+            \pause \item 对于每个顶点$v \in  V$，用$d[v]$描述$s$到$v$的最短路径上界，称为最短路估计。
+            \pause \item 对于一条边$(u, v) \in E$，若$d[u] + cost(u, v) < d[v]$，则用$d[u] + cost(u, v)$更新$d[v]$的值。
+            \pause \item 这一操作称为松弛操作，原理为三角不等式。
+            \pause \item 松弛操作的本质为：不断寻找当前状态与目标状态之间的矛盾并调整，直到找不到矛盾，即达到最优状态。
+        \end{itemize}
+    \end{frame}
+
+    \subsection{Dijkstra算法}
+    \begin{frame}{概述}
+        \begin{itemize}
+            \pause \item Dijkstra算法用于求解没有负权边的单源最短路问题。
+            \pause \item 由最短路的最优子结构性质可知，如果存在一条从$i$到$j$的最短路径$\{V_i, ..., V_k, V_j\}$，那么$\{V_i, ..., V_k\}$必定是从$i$ 到$k$的最短路径。
+            \pause \item 由于没有负权边，因此最短路长度递增。
+            \pause \item 因此，Dijkstra算法的核心思想为：每次选取一个未被访问过的与源点距离最短的点，更新与其相邻的点的距离。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{复杂度}
+        \begin{itemize}
+            \pause \item 每次选取一个未被访问过的点，时间复杂度为$O(n)$。
+            \pause \item 用点$u$更新与其相邻的点的距离，总时间复杂度为$O(e)$。
+            \pause \item 图上一共有$n$个点，即选取$n$次，因此Dijkstra算法的时间复杂度为$O(e + n ^ 2)$。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{正确性证明}
+        \begin{itemize}
+            \pause \item 下面用数学归纳法证明如下结论：
+            \pause \item 对于每个访问过的顶点$u$，$d[u]$是从源点到$u$的最短路（即不会再被更新）；对于每个未访问过的顶点$u$，$d[u]$是从源点到$u$经过已访问过的顶点的最短路。
+            \pause \item 当只有一个被访问过的顶点时，结论显然成立。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{正确性证明}
+        \begin{itemize}
+            \pause \item 在算法的某一阶段，令$v$是未访问过的顶点中$d[v]$值最小的一个。
+            \pause \item 假设有其他一条比$d[v]$更短的最短路，且$w$是这条最短路上第一个未访问过的点。
+            \pause \item 因为$d[v]$是未访问过的顶点中$d[v]$值最小的一个，所以$d[w] > d[v]$。
+            \pause \item 而$w$在从源点到$v$的最短路上，且边权非负，所以$d[w] < d[v]$，与$d[w] > d[v]$ 矛盾。
+            \pause \item 假设错误，该结论得证。
+            \pause \item 因此，当所有顶点都被访问后，从源点到各点$u$的最短路即为$d[u]$。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{基于堆优化的Dijkstra算法}
+        \begin{itemize}
+            \pause \item 与朴素的Prim算法类似，代码时间主要浪费在遍历所有点找到一个距离最小的点。
+            \pause \item 因此联系到运用堆优化Dijkstra算法。
+            \pause \item 在堆中维护未被访问过的点的$d[v]$值。
+            \pause \item 每次选取一个顶点$u$，枚举$u$的边表更新与其相邻的点$v$的$d[v]$值。
+            \pause \item 使用二叉堆和邻接表优化Dijkstra算法，时间复杂度为$O((n + e)~log~n)$。
+            \pause \item 还可以使用更高级的堆来优化时间复杂度，如用斐波那契堆和邻接表优化Dijkstra算法的时间复杂度为$O(e + n~log~n)$。
+        \end{itemize}
+    \end{frame}
+
+    \subsection{SPFA算法}
+    \begin{frame}{概述}
+        \begin{itemize}
+            \pause \item 基于队列优化的Bellman-Ford算法（SPFA算法）用于求解没有负环的图的单源最短路问题。
+            \pause \item 初始时将源点加入队列。
+            \pause \item 每次从队列中取出一个元素，更新所有与它相邻的点与源点的距离。
+            \pause \item 若某个点被更新，则将其入队。
+            \pause \item 当队列为空时算法结束。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{与BFS算法的异同}
+        \begin{itemize}
+            \pause \item 基于队列优化的Bellman-Ford算法与BFS算法在形式上非常相似。
+            \pause \item BFS算法中，一个点出队以后不可能重新进入队列。
+            \pause \item 而基于队列优化的Bellman-Ford算法可能出队列之后再次被放入队列。
+            \pause \item 即一个点改进过其他点之后，过一段时间可能本身被改进，再用来改进其他点。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{复杂度}
+        \begin{itemize}
+            \pause \item 队列优化无法改变Bellman-Ford算法的复杂度上界。
+            \pause \item 最坏情况下，一个点最多入队$n$次，因此基于队列优化的Bellman-Ford算法的复杂度上界为$O(ne)$。
+            \pause \item 设$k$为所有顶点入队的平均次数，那么基于队列优化的Bellman-Ford算法期望的时间复杂度为$O(ke)$。
+            \pause \item 在一般情况下，$k \leq 2$。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{正确性证明}
+        \begin{itemize}
+            \pause \item 每次更新将点$v$的最短路估计值$dist[v]$变小。
+            \pause \item 随着算法的执行，$dist[v]$会逐渐变小。
+            \pause \item 假定图中不出现负环，那么源点到每个顶点都有最短路径值。
+            \pause \item 因此，算法不会无限执行下去。
+            \pause \item 当$dist[v]$值逐渐变小达到最短路径值时，算法结束。
+            \pause \item 此时$dist[v]$即为对应顶点的最短路径值。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{判断负环}
+        \begin{itemize}
+            \pause \item 若图没有负环，则一个点最多入队$n$次。
+            \pause \item 若某个点在算法中入队$n$次以上，说明图中出现负环。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{SLF优化}
+        \begin{itemize}
+            \pause \item 即Small Label First策略。
+            \pause \item 设要加入的顶点为$j$，队首元素为$i$。
+            \pause \item 若$d[j] < d[i]$，则将$j$插入队首，否则插入队尾。
+            \pause \item 根据实验，SLF优化可使速度提高$15\%$至$20\%$。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{LLL优化}
+        \begin{itemize}
+            \pause \item 即Large Label Last策略。
+            \pause \item 设队首元素为$i$，队列中所有元素$d[u]$值为$\mu$。
+            \pause \item 若$d[i] > \mu$则将$i$插到队尾，查找下一元素，直到找到某一$i$使得$d[i] \leq \mu$。
+            \pause \item 此时，将$i$出队进行松弛操作。
+            \pause \item 根据实验，同时使用SLF优化和LLL优化可使速度提高约$50\%$。
+        \end{itemize}
+    \end{frame}
+
+    \subsection{例题选讲}
+    \begin{frame}{题目大意}
+        \begin{itemize}
+            \pause \item 给定一张无向图和$e$条航线，要从顶点1到顶点$m$运输$n$天。
+            \pause \item 其中某些顶点在某些天不能经过。
+            \pause \item 更换运输路线的代价为$K$。
+            \pause \item 求总代价的最小值。
+            \pause \item $n \leq 100$，$m \leq 20$。
+            \pause \item 题目来源：ZJOI 2006。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{标准算法}
+        \begin{itemize}
+            \pause \item 令$cost[i][j]$表示从第$i$天到第$j$天都走同一运输路线的最小代价。
+            \pause \item 用基于队列优化的Bellman-Ford算法预处理$cost[i][j]$。
+            \pause \item 然后用动态规划，令$f[i]$表示第一天到第$i$天的最小代价。
+            \pause \item 状态转移方程为$f[i] = min\{f[j] + cost[j + 1][i] + K\}$。
+            \pause \item 时间复杂度为$O(k n ^ 2 e + n ^ 2)$。
+        \end{itemize}
+    \end{frame}
+
+    \subsection{差分约束系统}
+    \begin{frame}{问题概述}
+        \begin{itemize}
+            \pause \item 差分约束系统由$n$个变量$x_i$和$m$个约束条件组成。
+            \pause \item 每个约束条件为形如$x_i - x_j \leq y_k$或$x_i - x_j \geq y_k$的不等式。
+            \pause \item 问差分约束系统是否存在一组解，满足$m$个约束条件。
+            \pause \item 若存在，求出一组解。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{转化}
+        \begin{itemize}
+            \pause \item 差分约束系统可转化为单源最短路或最长路问题求解。
+            \pause \item 固定一个变量，求其他变量最大值的差分约束系统可以转化为最短路模型。
+            \pause \item 观察$x_i - x_j \leq y_k$，发现它类似最短路问题中的三角不等式$d[v] \leq d[u] + cost(u, v)$，即$d[v] - d[u] \leq cost(u, v)$。
+            \pause \item 对于约束条件$x_i - x_j \leq y_k$，连一条边$(j, i)$，边权为$y_k$。
+            \pause \item 对于约束条件$x_i - x_j \geq y_k$，不等号左右取负号，变为$x_j - x_i \leq -y_k$，连 一条边$(i, j)$，边权为$-y_k$。
+            \pause \item 使用SPFA算法求每个连通块的最短路，$d[u]$为一组可行解。
+            \pause \item 若图中有负环，则该差分约束系统无可行解。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{转化}
+        \begin{itemize}
+            \pause \item 类似地，固定一个变量，求其他变量最小值的差分约束系统可以转化为最长路模型。
+            \pause \item 约束条件$x_i - x_j \geq y_k$类似于最长路问题中的三角不等式$d[v] \geq d[u] + cost(u, v)$，即$d[v] - d[u] \geq cost(u, v)$。
+            \pause \item 因此，连一条边$(j, i)$，边权为$y_k$。
+            \pause \item 对于约束条件$x_i - x_j \leq y_k$，不等号左右取负号，变为$x_j - x_i \geq -y_k$，连一条边$(i, j)$，边权为$-y_k$。
+            \pause \item 其他转化与最短路模型相同，使用SPFA算法求每个连通块的最长路即可。
+            \pause \item 若图中有正环，则该差分约束系统无可行解。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{例题选讲}
+        \begin{itemize}
+            \pause \item 题目大意：
+            \pause \item 给定$n$个区间，第$i$个区间为$[a_i, b_i]$。
+            \pause \item 要求第$i$个区间与集合Z的交集至少有$c_i$ 个元素。
+            \pause \item 问集合Z中至少有多少个元素。
+            \pause \item $n \leq 5 * 10 ^ 4$，$a_i \leq b_i \leq 5 * 10 ^ 4$。
+            \pause \item 题目来源：ACM-ICPC Southwestern Europe 2002。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{例题选讲}
+        \begin{itemize}
+            \pause \item 标准算法：
+            \pause \item 令$x[i]$表示$\{i\}$与集合Z的交集元素个数，$s[i] = \sum\limits_{j = 0}^{i}x[i]$。
+            \pause \item 即$s[i]$表示$\{0, 1, 2, ..., i\}$与集合Z的交集元素个数。
+            \pause \item 因为$0 \leq x[i] \leq 1$，所以$0 \leq s[i] - s[i - 1] \leq 1$。
+            \pause \item 由于题目求$s[max\_value]$最大值，所以把问题转化为最短路模型，使用$a - b \geq c$的形式。
+            \pause \item 即有$s[i] - s[i - 1] \geq 0$，$s[i - 1] - s[i] \geq -1$。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{例题选讲}
+        \begin{itemize}
+            \pause \item 对于每一组约束$a_i, b_i, c_i$，有$s[b_i] - s[a_i - 1] \geq c_i$。
+            \pause \item 由于$s[i]$数组下标$i \geq 0$，所以$i - 1$可能不合法，把所有下标加1即可。
+            \pause \item 使用SPFA算法求出图的最长路，$s[max\_value]$即为所求答案。
+        \end{itemize}
+    \end{frame}
+
+    \subsection{K短路问题}
+    \begin{frame}{定义}
+        \begin{itemize}
+            \pause \item 给定带权图$G$、源点$s$及终点$t$，求从源点$s$到终点$t$权值第$k$小的路径。
+            \pause \item K短路问题可以看作是最短路问题的扩展。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{估价函数}
+        \begin{itemize}
+            \pause \item 估价函数是用来估计顶点重要性的函数。
+            \pause \item 估价函数的一般形式为$f(n) = g(n) + h(n)$。
+            \pause \item $f(n)$表示从初始状态经由状态$n$到目标状态的代价估计。
+            \pause \item $g(n)$表示从初始状态到状态$n$的实际代价。
+            \pause \item $h(n)$表示从状态$n$到目标状态的最优路径的估计代价。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{估价函数}
+        \begin{itemize}
+            \pause \item 在K短路问题中，$g(n)$表示从$s$到$n$的实际最短距离。
+            \pause \item $h(n)$表示从$n$到$t$的实际最短距离。
+            \pause \item 因此，$f(n) = g(n) + h(n)$表示从$s$到$t$的实际最短距离。
+            \pause \item 在K短路问题中，对每条边建反向边，以$t$为源点得到每个点的单源最短路，即可得到$h(n)$。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{A*算法求K短路}
+        \begin{itemize}
+            \pause \item 建立一个堆，初始时将源点$s$加入堆中。
+            \pause \item 每次从堆中取出$f(u)$值最小的点$u$。
+            \pause \item 如果$u = t$且终点$t$已被取出$k$次，则当前路径长度就是从$s$到$t$的$k$短路。
+            \pause \item 否则，遍历与点$u$相邻的点$v$，更新$f(v)$和$g(v)$，将$v$加入堆中。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{A*算法}
+        \begin{itemize}
+            \pause \item 令$d(n)$表示状态$n$到目标状态的距离。
+            \pause \item 若$h(n) < d(n)$，搜索点数多，范围大，效率低，但能得到最优解。
+            \pause \item 若$h(n) = d(n)$，搜索将严格沿着最短路径进行，此时效率最高。
+            \pause \item 若$h(n) > d(n)$，搜索点数少，范围小，效率高，但不能保证得到最优解。
+            \pause \item $h(n)$越接近$d(n)$，搜索效率越高。
+        \end{itemize}
+    \end{frame}
+
+    \section{二分图相关问题}
+    \begin{frame}[shrink]
+		\frametitle{主要内容}
+		\begin{multicols}{3}
+			\tableofcontents[currentsection,currentsubsection]
+		\end{multicols}
+	\end{frame}
+
+    \subsection{二分图}
+    \begin{frame}{定义及性质}
+        \begin{itemize}
+            \pause \item 对于无向图$G$，如果可以把点集$V$分成不相交的两部分$X$和$Y = V \backslash X$，使得每条边的其中一个端点在$X$中，另一个端点在$Y$中，则称图$G$是二分图。
+            \pause \item 另一种等价的说法是，可以把每个顶点着以黑色和白色之一，使得每条边的两个端点颜色不同。
+            \pause \item 一个非连通的图是二分图，当且仅当它的每个连通分量都是二分图。
+            \pause \item 无向图$G$为二分图的充分必要条件是，$G$至少有两个顶点，且其所有回路均为偶环。
+        \end{itemize}
+    \end{frame}
+
+    \subsection{二分图判定}
+    \begin{frame}{染色法}
+        \begin{itemize}
+            \pause \item 使用DFS对每个连通分量进行黑白染色。
+            \pause \item 设当前顶点为$u$，枚举与$u$相邻的顶点$v$。
+            \pause \item 若$v$已染色且与$u$颜色相同，则不符合二分图定义，该图不是二分图。
+            \pause \item 否则，若$v$未染色则将其染上与$u$相反的颜色，继续DFS进行判断。
+            \pause \item 时间复杂度与DFS相同，为$O(n + e)$。
+        \end{itemize}
+    \end{frame}
+
+    \subsection{二分图最大匹配}
+    \begin{frame}{匹配}
+        \begin{itemize}
+            \pause \item 在图论中，一个匹配是一个边的集合，其中任意两条边都没有公共顶点。
+            \pause \item 匹配又称边独立集。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{二分图最大匹配}
+        \begin{itemize}
+            \pause \item 给出一个二分图，找一个边数最大的匹配，即选尽量多的边，使得任意两条选中的边均没有公共顶点。
+            \pause \item 如果所有点都是匹配点，则称这个匹配是完美匹配。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{三个重要性质}
+        \begin{itemize}
+            \pause \item 最小点覆盖：选取最少的顶点，使得每条边至少与其中一个顶点相连。
+            \pause \item 最小点覆盖数 = 最大匹配数。(1)
+            \pause \item 最小路径覆盖：选取最少的边，使之覆盖了图中所有顶点。
+            \pause \item 最小路径覆盖 = $|V| -$ 最大匹配数。(2)
+            \pause \item 最大独立集：选出最多的点，使之两两没有边相连。
+            \pause \item 最大独立集 = $|V| -$ 最大匹配数。(3)
+        \end{itemize}
+    \end{frame}
+
+    \subsection{匈牙利算法}
+    \begin{frame}{定义}
+        \begin{itemize}
+            \pause \item 匈牙利算法的核心为用增广路求二分图最大匹配。
+            \pause \item 未盖点：设$V_i$是图$G$的一个顶点，若$V_i$不与任何一条属于匹配$M$的边相连，则称$V_i$是一个未盖点。
+            \pause \item 交错路：设$P$是图$G$的一条路，若$P$的任意两条相邻的边一定为一条属于匹配$M$而一条不属于匹配$M$，则称$P$是一条交错路。
+            \pause \item 增广路：两个端点都是未盖点的交错路成为增广路。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{概述}
+        \begin{itemize}
+            \pause \item 由于增广路第一条边未参与匹配，第二条边参与了匹配，第三条边未参与匹配，以此类推，即未匹配的边比已匹配的边多一条。
+            \pause \item 那么将未匹配的边变成匹配的边，匹配的边变成未匹配的边，即将所有边反色。
+            \pause \item 这样修改后，匹配仍是合法的，但匹配数增加了一对。
+            \pause \item 不能再找增广路径时，即找到一个最大匹配。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{复杂度}
+        \begin{itemize}
+            \pause \item 找一条增广路的时间复杂度为$O(e)$。
+            \pause \item 每找一条增广路，匹配数增加一对。
+            \pause \item 匹配数最多为$O(n)$，因此匈牙利算法时间复杂度为$O(ne)$。
+            \pause \item 二分图最大匹配还可用网络流求解，在这里不涉及。
+        \end{itemize}
+    \end{frame}
+
+    \section{强连通分量}
+    \begin{frame}[shrink]
+		\frametitle{主要内容}
+		\begin{multicols}{3}
+			\tableofcontents[currentsection,currentsubsection]
+		\end{multicols}
+	\end{frame}
+
+    \subsection{定义}
+    \begin{frame}{定义}
+        \begin{itemize}
+            \pause \item 类似于无向图的连通分量，有向图中有强连通分量的概念。
+            \pause \item 在有向图$G$中，如果两个顶点$u$和$v$间，有一条从$u$向$v$的有向路径，同时还有一条从$v$向$u$的有向路径，则称这两个顶点强连通。
+            \pause \item 如果有向图$G$的每两个顶点都强连通，则称$G$是一个强连通图。
+            \pause \item 有向图的极大强连通子图，称为强连通分量。
+            \pause \item 如果把一个强连通分量看作一个点，那么所有强连通分量构成了一个强连通分量图。
+            \pause \item 强连通分量图不存在有向环，因此是一个有向无环图。
+        \end{itemize}
+    \end{frame}
+
+    \subsection{Tarjan算法}
+    \begin{frame}{概述}
+        \begin{itemize}
+            \pause \item Tarjan算法是一个基于对图深度优先搜索求有向图强连通分量的算法。
+            \pause \item 每个强连通分量为搜索树中的一棵子树。
+            \pause \item 搜索时，将未处理的顶点加入一个栈，回溯时判断栈顶到栈中的元素是否为一个强连通分量。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{实现}
+        \begin{itemize}
+            \pause \item 定义$dfn[u]$为顶点$u$搜索的次序编号，即时间戳。
+            \pause \item 定义$low[u]$为$u$或$u$的子树能够追溯到的最早的栈中顶点的次序编号。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{实现}
+        \begin{itemize}
+            \pause \item 令当前顶点为$u$，$(u, v)$为$u$发出的一条有向边，根据定义易得：
+            \pause \item 若$(u, v)$为有向图DFS树上的一条树边，则$low[u] = min\{dfn[u], low[v]\}$；
+            \pause \item 若$(u, v)$为指向栈中顶点的一条后向边，则$low[u] = min\{dfn[u], dfn[v]\}$；
+            \pause \item 否则，$low[u] = dfn[u]$。
+            \pause \item 当$dfn[u] = low[u]$时，以$u$为根的搜索子树上所有顶点组成一个强连通分量。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{复杂度}
+        \begin{itemize}
+            \pause \item 在Tarjan算法中，每个点被访问了一次，且只进出了一次栈。
+            \pause \item 每条边也只被访问了一次。
+            \pause \item 因此，Tarjan算法的时间复杂度为$O(n + e)$。
+        \end{itemize}
+    \end{frame}
+
+    \subsection{例题选讲}
+    \begin{frame}{题目大意}
+        \begin{itemize}
+            \pause \item 给定一个有向图，求最大团。
+            \pause \item 即求一个顶点数最大的点集，使得该点集中任意两个顶点$u$和$v$满足：
+            \pause \item 要么$u$可以到达$v$，要么$v$可以到达$u$，或$u$和$v$可以相互到达。
+            \pause \item $n, m \leq 10 ^ 6$。
+            \pause \item 题目来源：UVa Online Judge 11324。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{标准算法}
+        \begin{itemize}
+            \pause \item 不难发现，在最优方案中，同一个强连通分量中的点要么都选，要么都不选。
+            \pause \item 将强连通分量缩点后得到一个强连通分量图，令每个强连通分量点的权值为它的顶点数。
+            \pause \item 题目转化为求强连通分量图上权值和最大的路径。
+            \pause \item 由于强连通分量图是一个有向无环图，可以用基于拓扑图的动态规划求解。
+            \pause \item Tarjan算法和基于拓扑图的动态规划的时间复杂度都是$O(n + e)$，因此总时间复杂度为$O(n + e)$。
+        \end{itemize}
+    \end{frame}
+
+    \subsection{2-SAT问题}
+    \begin{frame}{问题概述}
+        \begin{itemize}
+            \pause \item 有$n$个布尔变量$A_i$和$m$个限制关系，每个限制关系形如$A_x~AND~A_y = 0$，$A_x~OR~A_y~OR~A_z = 1$等，要求确定$A_i$的值，使其满足所有限制关系，这个问题成为SAT问题。
+            \pause \item SAT问题可证明为NP完全问题。
+            \pause \item 特别地，若每个限制关系最多只对两个元素进行限制，则称为2-SAT问题。
+            \pause \item 2-SAT问题具有多项式解法。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{问题概述}
+        \begin{multicols}{2}
+            \begin{itemize}
+                \pause \item 2-SAT问题最多只对两个元素进行限制，可能的限制关系共有11种：
+                \pause \item $A_x$
+                \pause \item $NOT~A_x$
+                \pause \item $A_x~AND~A_y$
+                \pause \item $A_x~AND~NOT~A_y$
+                \pause \item $A_x~OR~A_y$
+                \pause \item $A_x~OR~NOT~A_y$
+                \pause \item $NOT~(A_x~AND~A_y)$
+                \pause \item $NOT~(A_x~OR~A_y)$
+                \pause \item $A_x~XOR~A_y$
+                \pause \item $NOT~(A_x~XOR~A_y)$
+                \pause \item $A_x~XOR~NOT~A_y$
+            \end{itemize}
+        \end{multicols}
+    \end{frame}
+    \begin{frame}{问题概述}
+        \begin{itemize}
+            \pause \item 在实际问题中，2-SAT问题在大多数时候表现为以下形式：
+            \pause \item 有$n$对物品，每对物品中必须选取一个，也只能选取一个。
+            \pause \item 物品之间存在某种限制关系，如某两个物品都不能选，某两个物品必须只能选一个，某个物品必选等。
+            \pause \item 可以将每对物品转化为一个布尔值，选第一个物品相当于布尔值为0，选第二个物品相当于布尔值为1。
+            \pause \item 如果所有限制关系最多只对两个物品进行限制，则它们都可以转化为11种基本限制关系，从而转化为2-SAT模型。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{建模}
+        \begin{itemize}
+            \pause \item 2-SAT问题的建模与实际问题非常相似。
+            \pause \item 建立一个$2n$阶的有向图，其中的点分为$n$对，每对点表示$A_i$的01取值（以下称代表$A_i = 0$的点为$i$，代表$A_i = 1$的点为$i'$）。
+            \pause \item 显然每对点必须且只能选取一个。
+            \pause \item 对于图中的边$(i, j)$，表示选了$i$必须选$j$。
+            \pause \item 对于后7种二元关系，可以用连边实现，如$NOT~(A_x~AND~A_y)$需要连两条边$(x, y')$和$(y, x')$，$A_x~OR~A_y$需要连两条边$(x', y)$ 和$(y', x)$。
+            \pause \item 对于前2种一元关系，$A_x$可以通过连边$(x', x)$实现，$NOT~A_x$可以通过连边$(x, x')$实现。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{brute-force算法}
+        \begin{itemize}
+            \pause \item 对于边$(i, j)$，若$i$被选，则$j$必选；若$j$未选，则$i$不能选。
+            \pause \item 给每个点设置一个状态$V$，$V = 0$表示状态未确定，$V = 1$表示确定选取，$V = 2$表示确定不选取。
+            \pause \item 建立两个队列$Q1$和$Q2$，分别存放本次尝试选取的点和尝试不选的点。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{brute-force算法}
+        \begin{itemize}
+            \pause \item 若图中的点均已确定，则找到一组解；否则，将$Q1$和$Q2$清空，任选一个未确定的点$i$，将$i$加入$Q1$，$i'$加入$Q2$。
+            \pause \item 找到所有$i$的后继$j$，若$j$未确定，则$j$加入队列$Q1$；若$j'$未确定，则加入队列$Q2$。
+            \pause \item 遍历$Q2$中每个点$j$，找到$j$的所有前趋$i$，若$i$未确定，则加入$Q2$。
+            \pause \item 若遍历中出现冲突，则本次尝试不成功，继续尝试$i'$；否则将$Q1$中所有点状态标记为1，$Q2$中所有点标记为2，继续尝试未确定的点。
+            \pause \item 若$i$和$i'$尝试均不成功，则问题无解。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{brute-force算法}
+        \begin{itemize}
+            \pause \item 最坏情况下，要尝试所有$n$个点，每次尝试要遍历所有的边。
+            \pause \item 时间复杂度为$O(mn)$。
+            \pause \item 多数情况下，时间复杂度达不到这个上界。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{brute-force算法}
+        \begin{itemize}
+            \pause \item $O(nm)$算法可用来求字典序最小的解。
+            \pause \item 一个点一旦被确定，则不可更改。
+            \pause \item 如果原图中的同一对点编号都连续（如01、23、45……），则按编号大小依次尝试每对点，每对点中先尝试编号小的，若失败再尝试编号大的。
+            \pause \item 如果原图中的同一对点编号不连续（如03、25、14……），则按照该对点中编号小的点的编号递增顺序将每对点排序，依次扫描排序后的每对点，先尝试其编号小的点，若失败再尝试编号大的。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{基于缩点的解法}
+        \begin{itemize}
+            \pause \item 在每一个强连通分量里，任意一个点的选择表示选择强连通分量里的每一个点。
+            \pause \item 不妨把强连通分量收缩成一个点，选择这个点表示选择这个点所对应的强连通分量中的每一个点。
+            \pause \item 这样构造出一个与原图等价的有向无环图。
+            \pause \item 若$i$和$i'$同属一个强连通分量，则无解。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{基于缩点的算法}
+        \begin{itemize}
+            \pause \item 对新图取反拓扑序，即每次选取度为0的点$i$，即保证选取的点对其他点无限制。
+            \pause \item 将点$i$的对称点$i'$及$i'$的所有前趋从图中删除。
+            \pause \item 选取$n$次，即得到一组合法解。
+            \pause \item Tarjan算法进行强连通分量缩点的时间复杂度为$O(n + e)$，拓扑排序的时间复杂度为$O(n + e)$，因此总时间复杂度为$O(n + e)$。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{例题选讲}
+        \begin{itemize}
+            \pause \item 题目大意：
+            \pause \item 有A、B、C三个任务要分配给$n$个人，其中每个人恰好要分配一个任务。
+            \pause \item 设这$n$个人的平均年龄为$x$，只有年龄大于或等于$x$的人才能分配任务A；只有年龄严格小于$x$的人才能分配任务B；任务C无年龄限制。
+            \pause \item 有$m$对人相互讨厌，因此不能分配统一任务。
+            \pause \item 求出一个满足上述所有条件的任务分配方案。
+            \pause \item $n, m \leq 10 ^ 6$。
+            \pause \item 题目来源：Live Archive 3713。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{例题选讲}
+        \begin{itemize}
+            \pause \item 标准算法：
+            \pause \item 每个人只有两种选择，年龄大于或等于$x$的人可以选择做任务A（$A_i = true$）或任务C（$A_i = false$），年龄小于$x$的人可以选择做任务B（$A_i = true$）或任务C（$A_i = false$），因此可以用一个布尔变量来表示每个人的分配方案。
+            \pause \item 考虑相互讨厌的一对人$i$和$j$。
+            \pause \item 如果$i$和$j$为相同类型，那么$A_i$和$A_j$必须不相同。
+            \pause \item 这个条件需要用两个限制关系表达，即$A_i~OR~A_j$和$A_i'~OR~A_j'$。
+            \pause \item 前者表示二者至少一个为真，后者表示至少一个为假，因此不可能同时真或同时假。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{例题选讲}
+        \begin{itemize}
+            \pause \item 如果$i$和$j$为相同类型，那么$A_i$和$A_j$不能同时为假，即冲突条件为$A_i = A_j = false$。
+            \pause \item 用一个限制关系表达，即$A_i~OR~A_j$。
+            \pause \item 每对冲突的人对应不超过两个限制关系，因此得到一个包含$n$个变量和不超过$2m$个限制关系的2-SAT问题模型。
+        \end{itemize}
+    \end{frame}
+
+    \section{双连通性问题}
+    \begin{frame}[shrink]
+		\frametitle{主要内容}
+		\begin{multicols}{3}
+			\tableofcontents[currentsection,currentsubsection]
+		\end{multicols}
+	\end{frame}
+
+    \subsection{定义}
+    \begin{frame}{连通度}
+        \begin{itemize}
+            \pause \item 在一个无向连通图中，如果有一个顶点集合，删除这个顶点集合，以及这个顶点集合相关联的边以后，原图变成多个连通块，就称这个点集为割点集合。
+            \pause \item 一个图的点连通度为它最小割点集合中的顶点数。
+            \pause \item 类似地，如果有一个边集合，删除这个边集合以后，原图变成多个连通块，就称这个边集合为割边集合。
+            \pause \item 一个图的边连通度为它最小割边集合中的边数。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{双连通图、割点与桥}
+        \begin{itemize}
+            \pause \item 如果一个无向连通图的点连通度大于1，则称该图是点双连通的。
+            \pause \item 一个图有割点，当且仅当这个图的点连通度为1，则割点集合的唯一元素被称为割点。
+            \pause \item 类似地，如果一个无向连通图的边连通度大于1，则称该图是边双连通的。
+            \pause \item 一个图有桥，当且仅当这个图的边连通度为1，则割边集合的唯一元素被称为桥。
+            \pause \item 双连通既可指点双连通，又可指边双连通。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{双连通分量}
+        \begin{itemize}
+            \pause \item 在图$G$的所有子图$G'$中，如果$G'$是双连通的，则称$G'$为双连通子图。
+            \pause \item 如果一个双连通子图$G'$不是任何一个双连通子图的真子集，则$G'$为极大双连通子图，即双连通分量。
+            \pause \item 特殊地，点双连通分量又称作块。
+        \end{itemize}
+    \end{frame}
+
+    \subsection{Tarjan算法求割点与桥}
+    \begin{frame}{概述}
+        \begin{itemize}
+            \pause \item Tarjan算法是一个基于对图深度优先搜索求无向图割点和桥的算法。
+            \pause \item 与求有向图强连通分量的Tarjan算法类似地，定义$dfn[u]$表示$u$在搜索树中被遍历到的次序号，即时间戳。
+            \pause \item 定义$low[u]$表示搜索树上$u$和$u$的子树中能通过反向边（返祖边）追溯到的最早顶点，即$dfn[v]$最小的顶点。
+            \pause \item 根据定义，若$(u, v)$是一条树边，则有$low[u] = min\{dfn[u], low[v]\}$；若$(u, v)$是一条反向边，则有$low[u] = min\{dfn[u], dfn[v]\}$。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{概述}
+        \begin{itemize}
+            \pause \item 一个顶点$u$是割点，当且仅当满足(1)或(2)：
+            \pause \item (1) $u$为树根，且$u$有多余1棵子树；
+            \pause \item (2) $u$不为树根，且满足存在边$(u, v)$为树边（$u$是$v$在搜索树上的父亲），使得$dfn[u] \leq low[v]$。
+            \pause \item 一条无向边$(u, v)$是桥，当且仅当$(u, v)$为树边（$u$是$v$在搜索树上的父亲），且满足$dfn[u] < low[v]$。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{复杂度}
+        \begin{itemize}
+            \pause \item 与求有向图强连通分量的Tarjan算法类似，每个点只被访问一次，每条边也仅被访问一次。
+            \pause \item 因此，求无向图割点和桥的Tarjan算法的时间复杂度为$O(n + e)$。
+        \end{itemize}
+    \end{frame}
+
+    \subsection{求双连通分量}
+    \begin{frame}{求点双连通分量}
+        \begin{itemize}
+            \pause \item Tarjan算法求割点时，能够把每个点双连通分量求出。
+            \pause \item 建立一个栈，储存当前双连通分量。
+            \pause \item DFS时，每找到一条树枝边或后向边，则把这条边加入栈中。
+            \pause \item 如果遇到$dfn[u] \leq low[v]$，说明$u$是一个割点，把栈中的边一次取出，直到遇到边$(u, v)$。
+            \pause \item 同时取出这些边相关联的点，组成一个点双连通分量。
+            \pause \item 割点可以属于多个点双连通分量，其余每个点和每条边属于且仅属于一个点双连通分量。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{求边双连通分量}
+        \begin{itemize}
+            \pause \item 对于边双连通分量，只需求出所有的桥后，把桥边删除，原图变成多个连通块，则每个连通块是一个边双连通分量。
+            \pause \item 桥边不属于任何一个边双连通分量，其余每个点和每条边属于且仅属于一个边双连通分量。
+        \end{itemize}
+    \end{frame}
+
+    \subsection{构造双连通图}
+    \begin{frame}{概述}
+        \begin{itemize}
+            \pause \item 首先，求出所有的桥，删除这些桥边，剩下的每个连通块都是一个双连通分量。
+            \pause \item 把每个双连通分量收缩为一个顶点，再加入桥边，得到一棵树，边连通度为1。
+            \pause \item 统计出树中度为1的节点的个数，即为叶节点的个数，记为$leaf$。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{概述}
+        \begin{itemize}
+            \pause \item 至少在树上添加$\frac{leaf + 1}{2}$条边，就能使树达到边二连通。
+            \pause \item 首先把两个最近公共祖先最远的两个叶节点之间连接一条边，使这两个点到祖先的路径上所有点收缩到一起，因为一个形成的环一定是双连通的。
+            \pause \item 然后再找两个最近公共祖先最远的两个叶节点，这样一对一对找完，恰好是$\frac{leaf + 1}{2}$次，把所有点收缩到了一起。
+        \end{itemize}
+    \end{frame}
+
+    \subsection{例题选讲}
+    \begin{frame}{题目大意}
+        \begin{itemize}
+            \pause \item 给定一个无向图，在无向图上选择尽量少的点涂黑，使得任意删除一个点后，每个连通分量至少有一个黑点。
+            \pause \item 求出最少要标记多少个点，并且求出当黑点数量最小时的方案总数，对一个数取模。
+            \pause \item $n, m \leq 10 ^ 6$。
+            \pause \item 题目来源：ACM-ICPC World Final 2011。
+        \end{itemize}
+    \end{frame}
+    \begin{frame}{标准算法}
+        \begin{itemize}
+            \pause \item 若图不存在割点，需要任选两个点涂黑，此时方案总数为$\frac{n(n - 1)}{2}$。
+            \pause \item 若图存在割点，不难发现，若删除的不是割点并不影响，且将割点涂黑没有意义。
+            \pause \item 考虑每一个点双连通分量，若该点双连通分量只有一个割点，则任选一个非割点的顶点涂黑。
+            \pause \item 若一个点双连通分量有两个或两个以上的割点，则不用涂黑，因为一个割点被删除还可以走另一个割点。
+        \end{itemize}
+    \end{frame}
+
+    \section{}
+    \begin{frame}
+        \centering
+        \huge 谢谢大家！
+    \end{frame}
+
+\end{CJK}
+\end{document}
